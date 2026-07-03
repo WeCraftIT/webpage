@@ -1,151 +1,210 @@
+import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, ArrowDown, FileText } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 export default function Hero() {
-  const socialLinks = [
-    {
-      icon: <Github size={20} />,
-      href: 'https://github.com/srinidhi9353',
-      label: 'GitHub',
-    },
-    {
-      icon: <Linkedin size={20} />,
-      href: 'https://www.linkedin.com/in/srinidhi-n-a185652a3?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app',
-      label: 'LinkedIn',
-    },
-    {
-      icon: <Mail size={20} />,
-      href: 'mailto:ssrinidhi622@gmail.com',
-      label: 'Email',
-    },
-    {
-      icon: (
-        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M13.483 0a1.374 1.374 0 0 0-.961.414l-9.98 10.02a1.37 1.37 0 0 0 0 1.94l4 4a1.37 1.37 0 0 0 1.94 0l10.019-10.02a1.374 1.374 0 0 0 0-1.94L14.442.414A1.37 1.37 0 0 0 13.483 0zm5.176 10.15a.5.5 0 0 1-.354-.146l-.854-.853a.5.5 0 0 1 .708-.708l.854.854a.5.5 0 0 1-.354.853zm-3 3a.5.5 0 0 1-.354-.146l-.854-.853a.5.5 0 0 1 .708-.708l.854.854a.5.5 0 0 1-.354.853zM5.854 18.854a.5.5 0 1 1-.708-.708l3.146-3.147a.5.5 0 0 1 .708.708l-3.146 3.147z" />
-          <path d="M16.183 2.943a.5.5 0 0 0-.07.704C16.809 4.547 17 5.518 17 6.5c0 4.136-3.364 7.5-7.5 7.5a7.487 7.487 0 0 1-5.138-2.013.5.5 0 1 0-.68.735A8.487 8.487 0 0 0 9.5 15c4.687 0 8.5-3.813 8.5-8.5 0-1.115-.215-2.221-.62-3.235a.5.5 0 0 0-.697-.222z" />
-        </svg>
-      ),
-      href: 'https://leetcode.com/xua0qxGkrF/',
-      label: 'LeetCode',
-    },
-  ];
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const particles: Array<{
+      x: number;
+      y: number;
+      size: number;
+      speedX: number;
+      speedY: number;
+      color: string;
+      alpha: number;
+    }> = [];
+
+    const colors = ['#2563EB', '#7C3AED', '#3B82F6', '#8B5CF6'];
+
+    for (let i = 0; i < 45; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        size: Math.random() * 2 + 1,
+        speedX: (Math.random() - 0.5) * 0.4,
+        speedY: (Math.random() - 0.5) * 0.4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        alpha: Math.random() * 0.5 + 0.1,
+      });
+    }
+
+    let mouse = { x: -1000, y: -1000 };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    };
+
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('resize', handleResize);
+
+    const drawGrid = () => {
+      if (!ctx) return;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.025)';
+      ctx.lineWidth = 1;
+      const gridSize = 60;
+      
+      for (let x = 0; x < width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+    };
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Grid background overlay
+      drawGrid();
+
+      // Render interactive particles
+      particles.forEach((p) => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        if (p.x < 0 || p.x > width) p.speedX *= -1;
+        if (p.y < 0 || p.y > height) p.speedY *= -1;
+
+        // Interaction with mouse
+        const dx = mouse.x - p.x;
+        const dy = mouse.y - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        ctx.beginPath();
+        if (dist < 180) {
+          ctx.arc(p.x, p.y, p.size * 1.5, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = (1.2 - dist / 180) * 0.8;
+          
+          // Draw subtle interactive link lines
+          ctx.strokeStyle = p.color;
+          ctx.lineWidth = 0.5;
+          ctx.globalAlpha = (1.0 - dist / 180) * 0.25;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.stroke();
+        } else {
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = p.alpha;
+        }
+        ctx.fill();
+      });
+
+      ctx.globalAlpha = 1.0;
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   return (
-    <section
-      id="about"
-      className="min-h-screen relative flex items-center pt-24 pb-12 overflow-hidden bg-grid-subtle"
-    >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center z-10">
+    <section className="min-h-screen relative flex items-center justify-center overflow-hidden pt-24 bg-[#050816]">
+      {/* Dynamic Canvas Particles */}
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-0" />
+
+      {/* Modern Radial Glow Overlays */}
+      <div className="absolute top-[20%] left-[10%] w-[35rem] h-[35rem] rounded-full bg-gradient-to-tr from-[#2563EB] to-[#7C3AED] opacity-15 blur-[120px] pointer-events-none z-0" />
+      <div className="absolute bottom-[10%] right-[5%] w-[40rem] h-[40rem] rounded-full bg-gradient-to-br from-[#7C3AED] to-[#2563EB] opacity-10 blur-[150px] pointer-events-none z-0" />
+
+      {/* Accent Grid Detail */}
+      <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.015)_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none z-0" />
+
+      <div className="max-w-7xl mx-auto px-6 md:px-12 w-full flex flex-col items-center justify-center text-center z-10 py-16">
         
-        {/* Left Column - Content */}
+        {/* Monospace Badge Tagline */}
         <motion.div
-          className="lg:col-span-7 flex flex-col items-start text-left"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300 mb-8 cursor-default group"
         >
-          {/* Metadata badges */}
-          <div className="flex flex-wrap gap-3 mb-8">
-            <span className="px-3 py-1 text-xs font-mono font-medium tracking-tight rounded-full bg-white/[0.03] border border-white/[0.06] text-[#B4B4C7] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#7B61FF]"></span>
-              Patent Published
-            </span>
-            <span className="px-3 py-1 text-xs font-mono font-medium tracking-tight rounded-full bg-white/[0.03] border border-white/[0.06] text-[#B4B4C7] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#5D63FF]"></span>
-              MERN Developer
-            </span>
-            <span className="px-3 py-1 text-xs font-mono font-medium tracking-tight rounded-full bg-white/[0.03] border border-white/[0.06] text-[#B4B4C7] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              Open to Opportunities
-            </span>
-          </div>
-
-          {/* Heading */}
-          <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white mb-6 leading-[0.95]">
-            Software <br />
-            <span className="text-[#5D63FF]">Engineer</span>
-          </h1>
-
-          {/* Subheading */}
-          <p className="font-sans text-lg md:text-xl text-[#B4B4C7] max-w-xl mb-10 leading-relaxed font-light">
-            Building products that combine design, engineering and intelligence. 
-            Focused on creating fluid digital experiences that are functionally robust 
-            and visually refined.
-          </p>
-
-          {/* Buttons */}
-          <div className="flex flex-wrap gap-4 mb-12">
-            <a
-              href="#projects"
-              className="px-6 py-3.5 rounded-full bg-[#5D63FF] hover:bg-[#4E54E5] text-white font-sans text-sm font-medium tracking-tight transition-all duration-300 shadow-[0_4px_20px_rgba(93,99,255,0.25)] hover:shadow-[0_4px_25px_rgba(93,99,255,0.4)] hover:-translate-y-0.5"
-            >
-              Explore Work
-            </a>
-            <a
-              href="https://drive.google.com/file/d/1d6Tj4oGAztSPBvPOFIu9nlXFRuElOCW3/view?usp=sharing"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-2 px-6 py-3.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white font-sans text-sm font-medium tracking-tight transition-all duration-300 hover:-translate-y-0.5"
-            >
-              <FileText size={16} className="text-[#B4B4C7]" />
-              Resume
-            </a>
-          </div>
-
-          {/* Social Icons */}
-          <div className="flex items-center gap-6">
-            {socialLinks.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={social.label}
-                className="text-[#B4B4C7] hover:text-[#5D63FF] hover:scale-110 transition-all duration-300"
-              >
-                {social.icon}
-              </a>
-            ))}
-          </div>
+          <Sparkles size={12} className="text-[#2563EB] group-hover:rotate-12 transition-transform duration-300" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#94A3B8]">
+            YOU DREAM IT. WE BUILD IT.
+          </span>
         </motion.div>
 
-        {/* Right Column - Cinematic Portrait Image */}
-        <motion.div
-          className="lg:col-span-5 flex justify-center lg:justify-end w-full relative group"
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+        {/* Cinematic Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-[#F8FAFC] max-w-5xl leading-[1.05] mb-8"
         >
-          {/* Extremely Subtle Ambient Light Behind Image */}
-          <div className="absolute -inset-4 bg-white/5 rounded-2xl blur-2xl opacity-10 pointer-events-none"></div>
+          Transforming Ideas Into <br className="hidden md:inline" />
+          <span className="bg-gradient-to-r from-[#2563EB] via-[#60A5FA] to-[#7C3AED] bg-clip-text text-transparent">
+            Digital Experiences
+          </span>
+        </motion.h1>
 
-          {/* Portrait Container */}
-          <div className="w-full max-w-[400px] lg:max-w-[420px] relative rounded-2xl overflow-hidden border border-white/5 bg-white/[0.01]">
-            <motion.img
-              src="images/profile.jpeg"
-              alt="Srinidhi Portrait"
-              className="w-full h-auto object-contain grayscale opacity-90 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-700 ease-out"
-              whileHover={{ y: -4 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-            />
-            {/* Minimal overlay vignette */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#05070B] via-transparent to-transparent opacity-20"></div>
-          </div>
-        </motion.div>
-
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none opacity-40">
-        <span className="font-mono text-[10px] tracking-widest text-[#B4B4C7] uppercase">Scroll</span>
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+        {/* Sophisticated Subheading */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="font-sans text-lg md:text-xl text-[#94A3B8] max-w-3xl leading-relaxed mb-12 font-light"
         >
-          <ArrowDown size={14} className="text-[#B4B4C7]" />
+          We build scalable software, business websites, analytics platforms, AI solutions and academic innovations for visionaries who want to move fast.
+        </motion.p>
+
+        {/* Call to Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col sm:flex-row items-center gap-5 justify-center"
+        >
+          <a
+            href="#contact"
+            className="group relative flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-[#2563EB] to-[#7C3AED] text-white font-sans text-sm font-semibold tracking-wider transition-all duration-300 hover:shadow-[0_0_35px_rgba(37,99,235,0.3)] hover:scale-[1.02]"
+          >
+            START A PROJECT
+            <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform duration-300" />
+          </a>
+          <a
+            href="#services"
+            className="group px-8 py-4 rounded-full border border-white/10 bg-white/[0.01] hover:bg-white/[0.03] text-[#F8FAFC] font-sans text-sm font-semibold tracking-wider transition-all duration-300"
+          >
+            EXPLORE SERVICES
+          </a>
         </motion.div>
       </div>
 
+      {/* Decorative Gradient Line */}
+      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
     </section>
   );
 }
+

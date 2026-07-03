@@ -1,17 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Lenis from 'lenis';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import Projects from './components/Projects';
-import Experience from './components/Experience';
-import Skills from './components/Skills';
-import Achievements from './components/Achievements';
+import Services from './components/Services';
+import Process from './components/Process';
+import WhyChooseUs from './components/WhyChooseUs';
+import About from './components/About';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import Intro from './components/Intro';
 
 function App() {
+  const [showIntro, setShowIntro] = useState(true);
+
   useEffect(() => {
-    // Initialize Lenis smooth scroll
+    if (showIntro) return;
+
+    // Initialize Lenis smooth scroll only after intro completes
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -30,30 +35,37 @@ function App() {
     return () => {
       lenis.destroy();
     };
-  }, []);
+  }, [showIntro]);
 
   return (
-    <div className="relative min-h-screen bg-[#05070B] text-[#F6F6F7] selection:bg-[#5D63FF]/30 selection:text-white antialiased">
-      {/* Noise Overlay */}
-      <div className="noise-overlay" />
+    <>
+      {showIntro && <Intro onComplete={() => setShowIntro(false)} />}
+      
+      {!showIntro && (
+        <div className="relative min-h-screen bg-[#050816] text-[#F8FAFC] selection:bg-[#2563EB]/30 selection:text-white antialiased animate-[fade-up_0.8s_ease-out_forwards]">
+          {/* Noise Overlay */}
+          <div className="noise-overlay" />
 
-      {/* Navbar */}
-      <Navbar />
+          {/* Navbar */}
+          <Navbar />
 
-      {/* Main Layout Content */}
-      <main className="relative flex flex-col w-full">
-        <Hero />
-        <Projects />
-        <Experience />
-        <Skills />
-        <Achievements />
-        <Contact />
-      </main>
+          {/* Main Layout Content with generous padding for a premium, spacious layout */}
+          <main className="relative flex flex-col w-full gap-24 md:gap-36">
+            <Hero />
+            <Services />
+            <Process />
+            <WhyChooseUs />
+            <About />
+            <Contact />
+          </main>
 
-      {/* Footer */}
-      <Footer />
-    </div>
+          {/* Footer */}
+          <Footer />
+        </div>
+      )}
+    </>
   );
 }
 
 export default App;
+
