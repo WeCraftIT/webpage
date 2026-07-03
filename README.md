@@ -1,12 +1,16 @@
-# Srinidhi - Creative Engineering Portfolio
+# WE CRAFT IT — Premium Digital Engineering Studio
 
-A premium, modern, creative engineering portfolio website designed to showcase projects, internships, and certifications with a focus on visual storytelling, spacing, and micro-interactions.
+> **You Dream It. We Build It.**
 
-Inspired by design-forward startup aesthetics like Framer, Linear, Apple, and Awwwards.
+A premium, modern, design-forward software services studio website built for **WE CRAFT IT**. Crafted with a focus on visual storytelling, engineering-studio aesthetics, technical minimalism, and smooth micro-interactions.
+
+Inspired by premium digital product platforms like Vercel, Linear, Framer, and Supabase.
+
+---
 
 ## 🚀 Live Site
 Check out the live website deployed on GitHub Pages:
-👉 **[https://srinidhi9353.github.io/portfolio/](https://srinidhi9353.github.io/portfolio/)**
+👉 **[https://WeCraftIT.github.io/webpage/](https://WeCraftIT.github.io/webpage/)**
 
 ---
 
@@ -20,12 +24,15 @@ Check out the live website deployed on GitHub Pages:
 
 ---
 
-## ✨ Features
-1. **Cinematic Hero**: Left-aligned headline layout, clean metadata tags (Patent Published, MERN Developer, Open to Opportunities), social channels integration, and a responsive grayscale portrait layout with subtle interactive hover effects.
-2. **Immersive Case-Studies**: Replaced typical card-heavy grid structures with large showcase slots displaying actual projects (ALGOVIZ, Complete The Word, Purchase Path Analyzer, Wispr Flow Clone, and TaskNova) inside dark mockup plates.
-3. **Internships & Education**: Minimal editorial timeline detailing experiences at SuprMentr Technologies and CodSoft, alongside B.E. CSE academic milestones at East Point College of Engineering and Technology.
-4. **Interactive Credentials Gallery**: Integrates 9 certifications and patent credentials. Clicking any credential card launches a blurred-backdrop lightbox popup modal showing the verified image. Includes ESC key keyboard closing accessibility.
-5. **Contact Redirection**: Built a subject-enabled form that validates visitor input and dynamically pre-composes a Gmail compose URL in a new tab.
+## ✨ Studio Features
+1. **Cinematic Intro Loader**: Full-screen startup overlay showing the enlarged brand logo with a canvas-based flame physics engine circulating colored embers.
+2. **Minimalist Visual Spacing**: Spacing system (`gap-24 md:gap-36`) designed to match premium, technical dark-mode agency portfolios.
+3. **Engineering Services Grid**: Outlines professional execution capabilities including Custom Software, SaaS Applications, AI Integrations, and Academic Solutions.
+4. **Chatbot Spec Sheet Form**: A simplified 4-field contact system with chatbot-style prompt box integration:
+   - Paperclip attachment button supporting mockups or spec file uploading.
+   - Live character counter.
+   - Auto-generated project spec sheet summary redirected directly to Gmail compose at `connect.wecraftit@gmail.com`.
+5. **Linear/Vercel Theme**: Dark-first experience utilizing curated dark slate tones, fine gradient borders, and subtle glows.
 
 ---
 
@@ -40,7 +47,7 @@ npm install
 ```bash
 npm run dev
 ```
-Open **[http://localhost:5173/](http://localhost:5173/)** to preview the site locally with Hot Module Replacement (HMR).
+Open **[http://localhost:5173/portfolio/](http://localhost:5173/portfolio/)** to preview the site locally with Hot Module Replacement (HMR).
 
 ### 3. Production Build
 ```bash
@@ -51,16 +58,16 @@ Compiles and outputs production-ready assets directly into the **`docs/`** direc
 ---
 
 ## 🌐 Deploy to GitHub Pages
-The project is configured to compile directly into the `/docs` directory to support GitHub Pages out of the box.
+The project is configured to compile directly into the `/docs` directory to support GitHub Pages.
 
 1. Commit and push the changes:
    ```bash
    git add .
-   git commit -m "docs: Update portfolio documentation"
-   git push origin master
+   git commit -m "docs: Update WE CRAFT IT documentation"
+   git push origin main
    ```
 2. Go to your repository settings on GitHub.
 3. Select **Pages** on the left sidebar.
 4. Set the **Source** to `Deploy from a branch`.
-5. Under **Branch**, select `master` (or `main`) and change the folder from `/ (root)` to **`/docs`**.
+5. Under **Branch**, select `main` and change the folder from `/ (root)` to **`/docs`**.
 6. Click **Save**.
